@@ -4,7 +4,6 @@ namespace App\Http\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -16,88 +15,82 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class CustomExceptionHandler
 {
+    /**
+     * Handle an incoming exception and return a proper response.
+     */
     public static function handle(Request $request, \Throwable $e): Response
     {
-        $response = null;
+        $statusCode = self::getStatusCode($e);
+        $errorResponse = self::buildErrorResponse($request, $e, $statusCode);
+
+
+        self::logException($request, $e, $statusCode);
+        return new Response(
+            json_encode($errorResponse),
+            $statusCode,
+            ['Content-Type' => 'application/json']
+        );
+    }
+
+    /**
+     * Determine the HTTP status code based on the exception type.
+     */
+    private static function getStatusCode(\Throwable $e): int
+    {
+        return match (true) {
+            $e instanceof ValidationException => Response::HTTP_UNPROCESSABLE_ENTITY,
+            $e instanceof MethodNotAllowedHttpException => Response::HTTP_METHOD_NOT_ALLOWED,
+            $e instanceof ModelNotFoundException,
+            $e instanceof NotFoundHttpException,
+            $e instanceof RouteNotFoundException => Response::HTTP_NOT_FOUND,
+            $e instanceof AuthenticationException => Response::HTTP_UNAUTHORIZED,
+            $e instanceof HttpException => $e->getStatusCode(),
+            default => Response::HTTP_INTERNAL_SERVER_ERROR,
+        };
+    }
+
+    /**
+     * Build the error response payload.
+     */
+    private static function buildErrorResponse(Request $request, \Throwable $e, int $statusCode): array
+    {
+        $errorMsg = match (true) {
+            $e instanceof ValidationException => 'Validation failed.',
+            $e instanceof MethodNotAllowedHttpException => 'Method not allowed.',
+            $e instanceof ModelNotFoundException,
+            $e instanceof NotFoundHttpException,
+            $e instanceof RouteNotFoundException => $e->getMessage() ?: 'Record not found.',
+            $e instanceof AuthenticationException => 'Unauthenticated.',
+            $e instanceof HttpException => $e->getMessage(),
+            default => 'An unexpected error occurred.',
+        };
+
+        $response = [
+            'errorMsg' => $errorMsg,
+            'status' => $statusCode,
+        ];
 
         if ($e instanceof ValidationException) {
-            $response = response()->json(
-                [
-                    'errorMsg' => 'Validation failed.',
-                    'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
-                    'errors' => $e->errors(),
-                ],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        } elseif ($e instanceof MethodNotAllowedHttpException) {
-            $response = response()->json(
-                [
-                    'errorMsg' => 'Method not allowed.',
-                    'status' => Response::HTTP_METHOD_NOT_ALLOWED,
-                    'body' => ['requestedUrl' => $request->getUri()],
-                ],
-                Response::HTTP_METHOD_NOT_ALLOWED
-            );
-        } elseif ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException || $e instanceof RouteNotFoundException) {
-            $response = response()->json(
-                [
-                    'errorMsg' => $e->getMessage() ?? 'Record not found.',
-                    'status' => Response::HTTP_NOT_FOUND,
-                    'body' => ['requestedUrl' => $request->getUri()],
-                ],
-                Response::HTTP_NOT_FOUND
-            );
-        } elseif ($e instanceof AuthenticationException) {
-            $response = response()->json(
-                [
-                    'errorMsg' => 'Unauthenticated.',
-                    'status' => Response::HTTP_UNAUTHORIZED,
-                    'body' => ['requestedUrl' => $request->getUri()],
-                ],
-                Response::HTTP_UNAUTHORIZED
-            );
-        } elseif ($e instanceof HttpException) {
-            $response = response()->json(
-                [
-                    'errorMsg' => $e->getMessage(),
-                    'status' => $e->getStatusCode(),
-                ],
-                $e->getStatusCode()
-            );
-        } else {
-            // Fallback for unsupported exception types
-            $response = response()->json(
-                [
-                    'errorMsg' => 'An unexpected error occurred.',
-                    'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'body' => ['requestedUrl' => $request->getUri()],
-                    'exception' => $e->getMessage(),
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            $response['errors'] = $e->errors();
         }
 
-        // Log exception details for debugging
-        self::logException($request, $e);
-
-        // Convert JsonResponse to Response if needed
-        if ($response instanceof JsonResponse) {
-            $response = new Response(
-                $response->getContent(),
-                $response->getStatusCode(),
-                $response->headers->all()
-            );
+        if ($statusCode === Response::HTTP_INTERNAL_SERVER_ERROR) {
+            $response['body'] = ['requestedUrl' => $request->getUri()];
+            $response['exception'] = $e->getMessage();
         }
 
         return $response;
     }
 
-    private static function logException(Request $request, \Throwable $e): void
+    /**
+     * Log exception details for debugging.
+     */
+    private static function logException(Request $request, \Throwable $e, int $statusCode): void
     {
         Log::error('Exception occurred', [
             'exception' => get_class($e),
             'message' => $e->getMessage(),
-            'status' => method_exists($e, 'getStatusCode') ? $e->getStatusCode() : Response::HTTP_INTERNAL_SERVER_ERROR,
+            'status' => $statusCode,
             'url' => $request->getUri(),
             'input' => $request->all(),
             'trace' => $e->getTraceAsString(),
