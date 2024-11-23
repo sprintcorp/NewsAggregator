@@ -70,7 +70,6 @@ class NewsAggregatorJob implements ShouldQueue
                     'category' => $item['category'] ?? 'general',
                     'published_date' => $item['dateTimePub'],
                     'content' => $item['body'],
-                    'url' => $item['url']
                 ]);
             }
         }
