@@ -23,7 +23,6 @@ class CustomExceptionHandler
         $statusCode = self::getStatusCode($e);
         $errorResponse = self::buildErrorResponse($request, $e, $statusCode);
 
-
         self::logException($request, $e, $statusCode);
         return new Response(
             json_encode($errorResponse),
@@ -43,7 +42,7 @@ class CustomExceptionHandler
             $e instanceof ModelNotFoundException,
             $e instanceof NotFoundHttpException,
             $e instanceof RouteNotFoundException => Response::HTTP_NOT_FOUND,
-            $e instanceof AuthenticationException => Response::HTTP_UNAUTHORIZED,
+            $e instanceof AuthenticationException => Response::HTTP_UNAUTHORIZED, // 401
             $e instanceof HttpException => $e->getStatusCode(),
             default => Response::HTTP_INTERNAL_SERVER_ERROR,
         };
@@ -60,7 +59,7 @@ class CustomExceptionHandler
             $e instanceof ModelNotFoundException,
             $e instanceof NotFoundHttpException,
             $e instanceof RouteNotFoundException => $e->getMessage() ?: 'Record not found.',
-            $e instanceof AuthenticationException => 'Unauthenticated.',
+            $e instanceof AuthenticationException => self::getAuthenticationErrorMessage($e),
             $e instanceof HttpException => $e->getMessage(),
             default => 'An unexpected error occurred.',
         };
@@ -95,5 +94,19 @@ class CustomExceptionHandler
             'input' => $request->all(),
             'trace' => $e->getTraceAsString(),
         ]);
+    }
+
+    /**
+     * Generate a custom message for AuthenticationException based on its context.
+     */
+    private static function getAuthenticationErrorMessage(AuthenticationException $e): string
+    {
+        $guards = $e->guards();
+
+        if (in_array('sanctum', $guards)) {
+            return 'Protected by Sanctum: Invalid or missing token.';
+        }
+
+        return 'Unauthenticated.';
     }
 }
