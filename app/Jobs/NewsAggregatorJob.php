@@ -59,17 +59,16 @@ class NewsAggregatorJob implements ShouldQueue
 
 
             $data = $response->json();
-            // info($data['articles']['results']);
 
             foreach ($data['articles']['results'] as $item) {
-                info($item['title']);
                 Article::updateOrCreate([
-                    'title' => $item['title'],
+                    'news_id' => $item['uri'],
                 ], [
+                    'title' => $item['title'],
                     'source' => $source['source'],
                     'category' => $item['category'] ?? 'general',
                     'published_date' => $item['dateTimePub'],
-                    'content' => $item['body'],
+                    'body' => $item['body'],
                 ]);
             }
         }
