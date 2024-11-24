@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use App\Http\Repositories\Contracts\UserRepositoryInterface;
 use App\Http\Repositories\Eloquent\UserRepository;
+use App\Http\Services\Contracts\NewsSourceInterface;
+use App\Http\Services\TheGuardianSourceService;
+use App\Http\Services\NewYorkTimesSourceService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,6 +17,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(TheGuardianSourceService::class, NewsSourceInterface::class);
+        $this->app->bind(NewYorkTimesSourceService::class, NewsSourceInterface::class);
     }
 
     /**
