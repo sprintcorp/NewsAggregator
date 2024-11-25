@@ -18,7 +18,27 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
     }
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/v1/articles",
+     *     operationId="getArticles",
+     *     tags={"Articles"},
+     *     summary="Fetch a paginated list of articles",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         description="Number of articles per page",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Articles retrieved successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     )
+     * )
      */
     public function index(FilterArticlesRequest $request): JsonResponse
     {
@@ -30,7 +50,34 @@ class ArticleController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/v1/articles/{id}",
+     *     operationId="getArticle",
+     *     tags={"Articles"},
+     *     summary="Fetch a single article by ID",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="Article ID",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Article retrieved successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Article not found.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Article not found.")
+     *         )
+     *     )
+     * )
      */
     public function show(int $id)
     {

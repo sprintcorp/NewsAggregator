@@ -19,8 +19,30 @@ class PreferenceController extends Controller
         $this->preferenceService = $preferenceService;
     }
 
-    /**
-     * Display a preferred article.
+
+     /**
+     * @OA\Get(
+     *     path="/api/v1/preferences",
+     *     operationId="getPreferences",
+     *     tags={"Preferences"},
+     *     summary="Fetch user preferences",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Preferences retrieved successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="message", type="string", example="Preferences retrieved successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No preferences found.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No preferences found.")
+     *         )
+     *     )
+     * )
      */
     public function index(Request $request): JsonResponse
     {
@@ -33,7 +55,51 @@ class PreferenceController extends Controller
     }
 
     /**
-     * Store preferences.
+     * @OA\Post(
+     *     path="/api/v1/preferences",
+     *     operationId="storePreferences",
+     *     tags={"Preferences"},
+     *     summary="Save user preferences",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="category",
+     *                 type="array",
+     *                 @OA\Items(type="string"),
+     *                 example={"Technology", "Australia news", "Real Estate", "US news"}
+     *             ),
+     *             @OA\Property(
+     *                 property="author",
+     *                 type="array",
+     *                 @OA\Items(type="string"),
+     *                 example={"Caitlin Cassidy", "Graeme Wearden", "By Angela Serratore"}
+     *             ),
+     *             @OA\Property(
+     *                 property="source",
+     *                 type="array",
+     *                 @OA\Items(type="string"),
+     *                 example={"The Guardian", "The New York Times"}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Preferences saved successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="message", type="string", example="Preferences saved successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid input data.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid input data.")
+     *         )
+     *     )
+     * )
      */
     public function store(StorePreferenceRequest $request)
     {
@@ -44,10 +110,29 @@ class PreferenceController extends Controller
         return ApiResponse::success($preference, 'Preferences saved successfully.', 201);
     }
 
-    /**
-     * Fetch the user preferences.
-     *
-     * @return JsonResponse
+     /**
+     * @OA\Get(
+     *     path="/api/v1/prefered/article",
+     *     operationId="getPreferredArticle",
+     *     tags={"Preferences"},
+     *     summary="Fetch user preferences",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Preferences retrieved successfully.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="message", type="string", example="Preferences retrieved successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No preferences found.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No preferences found.")
+     *         )
+     *     )
+     * )
      */
     public function show(Request $request): JsonResponse
     {
