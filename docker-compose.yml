@@ -11,6 +11,7 @@ services:
     volumes:
       - .:/var/www/html
       - ./storage:/var/www/html/storage
+      - ./database:/var/www/html/database
     networks:
       - laravel-network
     depends_on:
@@ -26,10 +27,64 @@ services:
       - DB_DATABASE=laravel
       - DB_USERNAME=laravel
       - DB_PASSWORD=secret
+      - SESSION_DRIVER=redis
       - CACHE_DRIVER=redis
+      - CACHE_STORE=redis
       - QUEUE_CONNECTION=redis
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-queue
+    networks:
+      - laravel-network
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+    command: sh -c "./wait-for-it.sh mysql:3306 -- php artisan queue:work --sleep=3 --tries=3"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=secret
+      - SESSION_DRIVER=redis
+      - CACHE_DRIVER=redis
+      - CACHE_STORE=redis
+      - QUEUE_CONNECTION=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-scheduler
+    networks:
+      - laravel-network
+    depends_on:
+      - mysql
+    volumes:
+      - .:/var/www/html
+    command: sh -c "while :; do php artisan schedule:run; sleep 60; done"
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=secret
 
   mysql:
     image: mysql:8.0

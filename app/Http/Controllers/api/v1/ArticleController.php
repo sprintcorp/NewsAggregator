@@ -7,7 +7,7 @@ use App\Http\Requests\Article\FilterArticlesRequest;
 use App\Http\Transformers\ArticleTransformer;
 use App\Http\Services\ArticleService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Responses\ApiResponse;
 
 class ArticleController extends Controller
 {
@@ -26,7 +26,7 @@ class ArticleController extends Controller
         $perPage = $request->input('per_page', 10);
         $articles = $this->articleService->getFilteredArticles($filters, $perPage);
 
-        return response()->json(ArticleTransformer::transformPaginated($articles));
+        return ApiResponse::success(ArticleTransformer::transformPaginated($articles));
     }
 
     /**
