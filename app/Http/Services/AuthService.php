@@ -4,7 +4,10 @@ namespace App\Http\Services;
 
 use App\Models\User;
 use App\Http\Repositories\Contracts\UserRepositoryInterface;
+use App\Notifications\SendOtpNotification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AuthService
 {
@@ -40,6 +43,46 @@ class AuthService
     public function resetPassword(array $data): void
     {
         $user = $this->userRepository->findByEmail($data['email']);
-        $user->update(['password' => Hash::make($data['password'])]);
+        $otp = Str::random(6);
+
+        $user->update([
+            'otp' => $otp,
+            'otp_expiration' => Carbon::now()->addMinutes(15),
+        ]);
+
+        $user->notify(new SendOtpNotification($user->otp));
+    }
+
+    public function updatePassword(array $data): array
+    {
+        $user = $this->userRepository->findByEmail($data['email']);
+
+        if (!$user) {
+            return $this->response(false, 'User not found.');
+        }
+
+        if ($user->otp !== $data['otp']) {
+            return $this->response(false, 'Invalid OTP.');
+        }
+
+        if (Carbon::now()->gt($user->otp_expiration)) {
+            return $this->response(false, 'OTP has expired.');
+        }
+
+        $user->update([
+            'password' => Hash::make($data['password']),
+            'otp' => null,
+            'otp_expiration' => null,
+        ]);
+
+        return $this->response(true, 'Password updated successfully.');
+    }
+
+    private function response(bool $success, string $message): array
+    {
+        return [
+            'status' => $success,
+            'message' => $message,
+        ];
     }
 }

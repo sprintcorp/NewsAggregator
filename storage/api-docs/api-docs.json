@@ -257,7 +257,57 @@
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "john.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update password.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password updated successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/savePassword": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update password",
+                "operationId": "savePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
                                     "email",
+                                    "otp",
                                     "password",
                                     "password_confirmation"
                                 ],
@@ -265,6 +315,10 @@
                                     "email": {
                                         "type": "string",
                                         "example": "john.doe@example.com"
+                                    },
+                                    "otp": {
+                                        "type": "string",
+                                        "example": "ASDERF"
                                     },
                                     "password": {
                                         "type": "string",

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\BaseFormRequest;
 
-class ResetPasswordRequest extends BaseFormRequest
+class UpdatePasswordRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,9 @@ class ResetPasswordRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|exists:users,email'
+            'email' => 'required|string|email|exists:users,email',
+            'password' => 'required|string|min:8|confirmed',
+            'otp' => 'required|string|min:6'
         ];
     }
 }

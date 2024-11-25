@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Http\Responses\ApiResponse;
 use App\Http\Services\AuthService;
 use Illuminate\Http\Request;
@@ -127,10 +128,8 @@ class AuthController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"email", "password", "password_confirmation"},
-     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
-     *             @OA\Property(property="password", type="string", example="password123"),
-     *             @OA\Property(property="password_confirmation", type="string", example="password123")
+     *             required={"email"},
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com")
      *         )
      *     ),
      *     @OA\Response(
@@ -146,6 +145,38 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         $this->authService->resetPassword($request->validated());
-        return ApiResponse::success([], 'Password reset successfully.');
+        return ApiResponse::success([], 'Password reset token sent to email, 15 minutes expiration time.');
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/savePassword",
+     *     operationId="savePassword",
+     *     tags={"Auth"},
+     *     summary="Update password",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "otp", "password", "password_confirmation"},
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="otp", type="string", example="ASDERF"),
+     *             @OA\Property(property="password", type="string", example="password123"),
+     *             @OA\Property(property="password_confirmation", type="string", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Update password.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object"),
+     *             @OA\Property(property="message", type="string", example="Password updated successfully.")
+     *         )
+     *     )
+     * )
+     */
+    public function savePassword(UpdatePasswordRequest $request)
+    {
+        $response = $this->authService->updatePassword($request->validated());
+        return $response;
     }
 }

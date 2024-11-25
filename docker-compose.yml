@@ -33,6 +33,14 @@ services:
       - QUEUE_CONNECTION=redis
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=465
+      - MAIL_USERNAME=sprintcorp7@gmail.com
+      - MAIL_PASSWORD=lrwwukrhhdtypjol
+      - MAIL_ENCRYPTION=ssl
+      - MAIL_FROM_ADDRESS=hello@example.com
+      - MAIL_FROM_NAME="${APP_NAME}"
 
   queue:
     build:
@@ -63,6 +71,14 @@ services:
       - QUEUE_CONNECTION=redis
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=465
+      - MAIL_USERNAME=sprintcorp7@gmail.com
+      - MAIL_PASSWORD=lrwwukrhhdtypjol
+      - MAIL_ENCRYPTION=ssl
+      - MAIL_FROM_ADDRESS=hello@example.com
+      - MAIL_FROM_NAME="${APP_NAME}"
 
   scheduler:
     build:
@@ -85,6 +101,14 @@ services:
       - DB_DATABASE=laravel
       - DB_USERNAME=laravel
       - DB_PASSWORD=secret
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=465
+      - MAIL_USERNAME=sprintcorp7@gmail.com
+      - MAIL_PASSWORD=lrwwukrhhdtypjol
+      - MAIL_ENCRYPTION=ssl
+      - MAIL_FROM_ADDRESS=hello@example.com
+      - MAIL_FROM_NAME="${APP_NAME}"
 
   mysql:
     image: mysql:8.0

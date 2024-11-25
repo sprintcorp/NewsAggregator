@@ -23,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'otp',
+        'otp_expiration',
     ];
 
     /**
@@ -93,5 +95,10 @@ class User extends Authenticatable
     public function preferences()
     {
         return $this->hasOne(Preference::class);
+    }
+
+    public function setOtpAttribute($value)
+    {
+        $this->attributes['otp'] = strtoupper($value);
     }
 }
