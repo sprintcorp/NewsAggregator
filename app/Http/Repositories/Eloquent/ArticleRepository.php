@@ -49,22 +49,18 @@ class ArticleRepository implements ArticleRepositoryInterface
     {
         $query = Article::query();
 
-        // Filter by categories
         if (!empty($preferences->category)) {
             $query->whereIn('category', $preferences->category);
         }
 
-        // Filter by authors
         if (!empty($preferences->author)) {
             $query->whereIn('author', $preferences->author);
         }
 
-        // Filter by sources
         if (!empty($preferences->source)) {
             $query->whereIn('source', $preferences->source);
         }
 
-        // Paginate the results
         return $query->paginate($perPage);
     }
 }

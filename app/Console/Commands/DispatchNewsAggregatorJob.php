@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Jobs\NewsAggregatorJob;
+use App\Http\Services\NewYorkTimesSourceService;
+use App\Http\Services\TheGuardianSourceService;
 
 class DispatchNewsAggregatorJob extends Command
 {
@@ -26,7 +28,9 @@ class DispatchNewsAggregatorJob extends Command
      */
     public function handle()
     {
-        NewsAggregatorJob::dispatch();
-        $this->info('NewsAggregatorJob dispatched successfully.');
+        NewsAggregatorJob::dispatch(NewYorkTimesSourceService::class);
+        NewsAggregatorJob::dispatch(TheGuardianSourceService::class);
+
+        $this->info('NewsAggregatorJobs dispatched for all sources.');
     }
 }

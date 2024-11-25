@@ -6,40 +6,32 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Http\Services\NewsService;
 
 class NewsAggregatorJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, SerializesModels;
 
-    private NewsService $newsService;
+    private string $sourceServiceClass;
 
     /**
      * Create a new job instance.
+     *
+     * @param string $sourceServiceClass Fully qualified class name of the service.
      */
-    public function __construct()
+    public function __construct(string $sourceServiceClass)
     {
-        $this->newsService = new NewsService();
+        $this->sourceServiceClass = $sourceServiceClass;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        info('Fetching articles...');
+        // Resolve the service class dynamically (must be a concrete class)
+        $service = app($this->sourceServiceClass);
 
-        // Fetch from The Guardian
-        $guardianArticles = $this->newsService->fetchGuardianArticles();
-        info('Fetched ' . count($guardianArticles) . ' articles from The Guardian.');
+        // Fetch articles using the resolved service
+        $articles = $service->fetchArticles();
 
-        // Fetch from NYT
-        $nytArticles = $this->newsService->fetchNYTArticles();
-        info('Fetched ' . count($nytArticles) . ' articles from NYT.');
-
-        // Store articles
-        $this->newsService->storeArticles(array_merge($guardianArticles, $nytArticles));
-
-        info('Articles successfully stored.');
+        // Dispatch a job to store the fetched articles
+        dispatch(new StoreArticlesJob($articles));
     }
 }

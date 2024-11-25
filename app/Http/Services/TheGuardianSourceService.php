@@ -3,64 +3,60 @@
 namespace App\Http\Services;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class TheGuardianSourceService implements NewsSourceInterface
 {
     private string $url = 'https://content.guardianapis.com/search';
     private string $apiKey;
+    private Client $httpClient;
 
-    public function __construct()
+    public function __construct(Client $client)
     {
-        $this->apiKey = env('GUARDIAN_KEY');
+        $this->httpClient = $client;
+        $this->apiKey = config('services.guardian.api_key');
     }
 
-    /**
-     * Fetch articles from The Guardian.
-     *
-     * @return array
-     */
     public function fetchArticles(): array
     {
         $articles = [];
-        $page = 1;
-        $pageSize = 10;
+        $pages = 5;
 
-        do {
-            $response = Http::get($this->url, [
-                'api-key' => $this->apiKey,
-                'page-size' => $pageSize,  
-                'page' => $page,
-            ]);
+        for ($page = 1; $page <= $pages; $page++) {
+            try {
+                $response = $this->httpClient->get($this->url, [
+                    'query' => [
+                        'api-key' => $this->apiKey,
+                        'page' => $page,
+                        'show-fields' => 'byline,body',
+                    ],
+                ]);
 
-            if ($response->failed()) {
-                Log::error("Failed to fetch data from The Guardian API. Page: {$page}");
-                break;
+                $data = json_decode($response->getBody()->getContents(), true);
+                $articles = array_merge($articles, $this->transformArticles($data));
+            } catch (RequestException $e) {
+                Log::error("Guardian API Request failed: {$e->getMessage()}");
             }
-
-            $responseData = $response->json('response');
-            $results = $responseData['results'] ?? [];
-            $totalPages = $responseData['pages'] ?? 1;
-
-            if (empty($results)) {
-                break;
-            }
-
-            foreach ($results as $item) {
-                $articles[] = [
-                    'news_id' => $item['id'] ?? null,
-                    'title' => $item['webTitle'] ?? null,
-                    'source' => 'The Guardian',
-                    'category' => $item['sectionName'] ?? null,
-                    'published_date' => $item['webPublicationDate'] ?? null,
-                    'body' => $item['webUrl'] ?? null,
-                ];
-            }
-
-            $page++;
-        } while ($page <= $totalPages);
+        }
 
         return $articles;
+    }
+
+    private function transformArticles(array $data): array
+    {
+        return collect($data['response']['results'] ?? [])->map(function ($item) {
+            return [
+                'news_id' => $item['id'],
+                'title' => strip_tags($item['webTitle']),
+                'source' => 'The Guardian',
+                'author' => strip_tags($item['fields']['byline'] ?? ''),
+                'category' => strip_tags($item['sectionName'] ?? ''),
+                'body' => strip_tags($item['fields']['body'] ?? ''),
+                'published_date' => Carbon::parse($item['webPublicationDate']),
+            ];
+        })->toArray();
     }
 }
