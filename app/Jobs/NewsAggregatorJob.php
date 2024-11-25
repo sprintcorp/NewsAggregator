@@ -6,20 +6,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Http\Services\ArticleService;
+use App\Http\Services\NewsService;
 
 class NewsAggregatorJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, SerializesModels;
 
-    private ArticleService $articleService;
+    private NewsService $newsService;
 
     /**
      * Create a new job instance.
      */
     public function __construct()
     {
-        $this->articleService = new ArticleService();
+        $this->newsService = new NewsService();
     }
 
     /**
@@ -27,6 +27,19 @@ class NewsAggregatorJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->articleService->fetchAndStoreArticles();
+        info('Fetching articles...');
+
+        // Fetch from The Guardian
+        $guardianArticles = $this->newsService->fetchGuardianArticles();
+        info('Fetched ' . count($guardianArticles) . ' articles from The Guardian.');
+
+        // Fetch from NYT
+        $nytArticles = $this->newsService->fetchNYTArticles();
+        info('Fetched ' . count($nytArticles) . ' articles from NYT.');
+
+        // Store articles
+        $this->newsService->storeArticles(array_merge($guardianArticles, $nytArticles));
+
+        info('Articles successfully stored.');
     }
 }

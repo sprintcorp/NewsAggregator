@@ -2,51 +2,41 @@
 
 namespace App\Http\Services;
 
-// use App\Http\Services\Contracts\NewsSourceInterface;
-use App\Models\Article;
-use App\Http\Services\TheGuardianSourceService;
-use App\Http\Services\NewYorkTimesSourceService;
-
+use App\Http\Repositories\Contracts\ArticleRepositoryInterface;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ArticleService
 {
-    private array $sources;
+    protected ArticleRepositoryInterface $articleRepository;
 
-    /**
-     * Register all news sources.
-     */
-    public function __construct()
+    public function __construct(ArticleRepositoryInterface $articleRepository)
     {
-        $this->sources = [
-            new TheGuardianSourceService(),
-            new NewYorkTimesSourceService()
-        ];
+        $this->articleRepository = $articleRepository;
     }
 
-    /**
-     * Fetch and store articles from all sources.
-     */
-    public function fetchAndStoreArticles(): void
+    public function getFilteredArticles(array $filters, int $perPage = 10)
     {
-        foreach ($this->sources as $source) {
-            $articles = $source->fetchArticles();
+        $cacheKey = $this->generateCacheKey($filters, $perPage);
 
-            foreach ($articles as $article) {
-                $this->storeArticle($article);
-            }
-        }
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($filters, $perPage) {
+            return $this->articleRepository->getAll($filters, $perPage);
+        });
     }
 
-    /**
-     * Store an article in the database.
-     */
-    private function storeArticle(array $articleData): void
+    public function getArticleById(int $id)
     {
-        if (!empty($articleData['news_id'])) {
-            Article::updateOrCreate(
-                ['news_id' => $articleData['news_id']],
-                $articleData
-            );
+        $article = $this->articleRepository->findById($id);
+
+        if (!$article) {
+            throw new ModelNotFoundException("Article not found.");
         }
+
+        return $article;
+    }
+
+    private function generateCacheKey(array $filters, int $perPage): string
+    {
+        return 'articles_' . md5(json_encode($filters) . "_perPage_" . $perPage);
     }
 }
