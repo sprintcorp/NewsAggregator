@@ -13,6 +13,12 @@ class Preference extends Model
         'user_id', 'category', 'author', 'source',
     ];
 
+    protected $casts = [
+        'category' => 'array',
+        'author' => 'array',
+        'source' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

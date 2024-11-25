@@ -28,7 +28,6 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
-        // $user = $request->bearerToken();
         $user = $request->user();
         return ApiResponse::success($user, 200);
     }
