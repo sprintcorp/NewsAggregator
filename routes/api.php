@@ -20,5 +20,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('articles/{id}', [ArticleController::class, 'show']);
     Route::post('preferences', [PreferenceController::class, 'store']);
     Route::get('preferences', [PreferenceController::class, 'show']);
-    Route::get('prefered/article', [PreferenceController::class, 'index']);
+    Route::get('personalized-feed', [PreferenceController::class, 'index']);
 });

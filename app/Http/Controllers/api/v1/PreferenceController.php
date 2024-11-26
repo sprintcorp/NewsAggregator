@@ -25,8 +25,8 @@ class PreferenceController extends Controller
 
      /**
      * @OA\Get(
-     *     path="/api/v1/preferences",
-     *     operationId="getPreferences",
+     *     path="/api/v1/personalized-feed",
+     *     operationId="getPersonalized feed",
      *     tags={"Preferences"},
      *     summary="Fetch user preferences",
      *     security={{"bearerAuth": {}}},
@@ -53,7 +53,9 @@ class PreferenceController extends Controller
         $perPage = $request->input('per_page', 10);
 
         $articles = $this->preferenceService->getArticlesByPreferences($user, $perPage);
-
+        if(!$articles){
+            return ApiResponse::error(null, 'No personalized feed.', 404);
+        }
         return ApiResponse::success($this->articleTransformer->transformPaginated($articles), 'Articles retrieved successfully.', 200);
     }
 
@@ -115,8 +117,8 @@ class PreferenceController extends Controller
 
      /**
      * @OA\Get(
-     *     path="/api/v1/prefered/article",
-     *     operationId="getPreferredArticle",
+     *     path="/api/v1/preferences",
+     *     operationId="getPreferences",
      *     tags={"Preferences"},
      *     summary="Fetch user preferences",
      *     security={{"bearerAuth": {}}},

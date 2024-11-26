@@ -54,11 +54,7 @@ class PreferenceService
         $preferences = $this->preferenceRepository->findByUserId($user->id);
 
         if (!$preferences) {
-            return [
-                'message' => 'No preferences found for this user.',
-                'data' => [],
-                'pagination' => null,
-            ];
+            return;
         }
 
         return $this->articleRepository->getArticlesByPreferences($preferences, $perPage);

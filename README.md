@@ -48,7 +48,7 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
 
 ### API Documentation
 - **Tool:** Swagger/OpenAPI.
-- **Endpoint:** Accessible via `/api/docs`.
+- **Endpoint:** Accessible via `http://localhost:8000/api/documentation`.
 - **Includes:**
   - Detailed descriptions of all endpoints.
   - Request/response examples.
@@ -91,5 +91,5 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/news-aggregator-api.git
-   cd news-aggregator-api
+   git clone https://github.com/sprintcorp/NewsAggregator.git
+   cd NewsAggregator

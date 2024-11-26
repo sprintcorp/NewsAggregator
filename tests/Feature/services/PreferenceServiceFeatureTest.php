@@ -86,8 +86,6 @@ class PreferenceServiceFeatureTest extends TestCase
 
         $result = $this->preferenceService->getArticlesByPreferences($user, 10);
 
-        $this->assertEquals('No preferences found for this user.', $result['message']);
-        $this->assertEmpty($result['data']);
-        $this->assertNull($result['pagination']);
+        $this->assertEmpty($result);
     }
 }

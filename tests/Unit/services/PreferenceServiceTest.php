@@ -65,20 +65,17 @@ class PreferenceServiceTest extends TestCase
     public function it_fetches_user_preferences()
     {
         $user = new User();
-        $user->setAttribute('id', 1); // Explicitly set the ID
+        $user->setAttribute('id', 1);
         $preferences = new Preference(['category' => ['Technology', 'Health']]);
 
-        // Mock the repository behavior
         $this->preferenceRepositoryMock
             ->shouldReceive('findByUserId')
             ->once()
             ->with($user->id)
             ->andReturn($preferences);
 
-        // Call the service method
         $result = $this->preferenceService->getPreferences($user);
 
-        // Assert
         $this->assertEquals($preferences, $result);
     }
 
@@ -86,29 +83,25 @@ class PreferenceServiceTest extends TestCase
     public function it_fetches_articles_based_on_user_preferences()
     {
         $user = new User();
-        $user->setAttribute('id', 1); // Explicitly set the ID
+        $user->setAttribute('id', 1);
         $preferences = new Preference(['category' => ['Technology', 'Health']]);
         $articles = ['article1', 'article2'];
         $perPage = 10;
 
-        // Mock the preference repository
         $this->preferenceRepositoryMock
             ->shouldReceive('findByUserId')
             ->once()
             ->with($user->id)
             ->andReturn($preferences);
 
-        // Mock the article repository
         $this->articleRepositoryMock
             ->shouldReceive('getArticlesByPreferences')
             ->once()
             ->with($preferences, $perPage)
             ->andReturn($articles);
 
-        // Call the service method
         $result = $this->preferenceService->getArticlesByPreferences($user, $perPage);
 
-        // Assert
         $this->assertEquals($articles, $result);
     }
 
@@ -116,24 +109,17 @@ class PreferenceServiceTest extends TestCase
     public function it_returns_message_when_user_has_no_preferences()
     {
         $user = new User();
-        $user->setAttribute('id', 1); // Explicitly set the ID
+        $user->setAttribute('id', 1);
         $perPage = 10;
 
-        // Mock the preference repository to return null
         $this->preferenceRepositoryMock
             ->shouldReceive('findByUserId')
             ->once()
             ->with($user->id)
             ->andReturn(null);
 
-        // Call the service method
         $result = $this->preferenceService->getArticlesByPreferences($user, $perPage);
 
-        // Assert
-        $this->assertEquals([
-            'message' => 'No preferences found for this user.',
-            'data' => [],
-            'pagination' => null,
-        ], $result);
+        $this->assertEmpty($result);
     }
 }

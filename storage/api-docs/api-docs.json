@@ -357,6 +357,57 @@
                 }
             }
         },
+        "/api/v1/personalized-feed": {
+            "get": {
+                "tags": [
+                    "Preferences"
+                ],
+                "summary": "Fetch user preferences",
+                "operationId": "getPersonalized feed",
+                "responses": {
+                    "200": {
+                        "description": "Preferences retrieved successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Preferences retrieved successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No preferences found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No preferences found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/preferences": {
             "get": {
                 "tags": [
@@ -487,57 +538,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Invalid input data."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/prefered/article": {
-            "get": {
-                "tags": [
-                    "Preferences"
-                ],
-                "summary": "Fetch user preferences",
-                "operationId": "getPreferredArticle",
-                "responses": {
-                    "200": {
-                        "description": "Preferences retrieved successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "type": "object"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Preferences retrieved successfully."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "No preferences found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "No preferences found."
                                         }
                                     },
                                     "type": "object"
