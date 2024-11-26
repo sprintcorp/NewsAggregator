@@ -9,7 +9,7 @@ class ArticleTransformer
     /**
      * Transform paginated articles for the list view (exclude the body field).
      */
-    public static function transformPaginated(LengthAwarePaginator $articles): array
+    public function transformPaginated(LengthAwarePaginator $articles): array
     {
         return [
             'data' => array_map(function ($article) {
@@ -22,7 +22,7 @@ class ArticleTransformer
                     'category' => $article->category,
                     'published_date' => $article->published_date->toDateTimeString(),
                 ];
-            }, $articles->items()), #
+            }, $articles->items()),
             'pagination' => [
                 'total' => $articles->total(),
                 'per_page' => $articles->perPage(),
@@ -37,7 +37,7 @@ class ArticleTransformer
     /**
      * Transform a single article for the detail view (include the body field).
      */
-    public static function transformForDetail($article): array
+    public function transformForDetail($article): array
     {
         return [
             'id' => $article->id,

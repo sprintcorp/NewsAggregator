@@ -177,6 +177,9 @@ class AuthController extends Controller
     public function savePassword(UpdatePasswordRequest $request)
     {
         $response = $this->authService->updatePassword($request->validated());
-        return $response;
+        if (isset($response['status']) && $response['status']) {
+            return ApiResponse::success([], $response['message']);
+        }
+        return ApiResponse::error($response['message'], 422);
     }
 }

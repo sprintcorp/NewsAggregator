@@ -14,9 +14,12 @@ class PreferenceController extends Controller
 {
     protected PreferenceService $preferenceService;
 
-    public function __construct(PreferenceService $preferenceService)
+    private ArticleTransformer $articleTransformer;
+
+    public function __construct(PreferenceService $preferenceService, ArticleTransformer $articleTransformer)
     {
         $this->preferenceService = $preferenceService;
+        $this->articleTransformer = $articleTransformer;
     }
 
 
@@ -51,7 +54,7 @@ class PreferenceController extends Controller
 
         $articles = $this->preferenceService->getArticlesByPreferences($user, $perPage);
 
-        return ApiResponse::success(ArticleTransformer::transformPaginated($articles), 'Articles retrieved successfully.', 200);
+        return ApiResponse::success($this->articleTransformer->transformPaginated($articles), 'Articles retrieved successfully.', 200);
     }
 
     /**

@@ -12,10 +12,11 @@ use App\Http\Responses\ApiResponse;
 class ArticleController extends Controller
 {
     protected ArticleService $articleService;
-
-    public function __construct(ArticleService $articleService)
+    private ArticleTransformer $articleTransformer;
+    public function __construct(ArticleService $articleService, ArticleTransformer $articleTransformer)
     {
         $this->articleService = $articleService;
+        $this->articleTransformer = $articleTransformer;
     }
     /**
      * @OA\Get(
@@ -46,7 +47,7 @@ class ArticleController extends Controller
         $perPage = $request->input('per_page', 10);
         $articles = $this->articleService->getFilteredArticles($filters, $perPage);
 
-        return ApiResponse::success(ArticleTransformer::transformPaginated($articles));
+        return ApiResponse::success($this->articleTransformer->transformPaginated($articles));
     }
 
     /**
@@ -79,12 +80,10 @@ class ArticleController extends Controller
      *     )
      * )
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         $article = $this->articleService->getArticleById($id);
 
-        return response()->json([
-            'data' => ArticleTransformer::transformForDetail($article),
-        ]);
+        return ApiResponse::success($this->articleTransformer->transformForDetail($article));
     }
 }

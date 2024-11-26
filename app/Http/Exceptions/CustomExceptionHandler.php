@@ -18,17 +18,14 @@ class CustomExceptionHandler
     /**
      * Handle an incoming exception and return a proper response.
      */
-    public static function handle(Request $request, \Throwable $e): Response
+    public static function handle(Request $request, \Throwable $e): \Illuminate\Http\JsonResponse
     {
         $statusCode = self::getStatusCode($e);
         $errorResponse = self::buildErrorResponse($request, $e, $statusCode);
 
         self::logException($request, $e, $statusCode);
-        return new Response(
-            json_encode($errorResponse),
-            $statusCode,
-            ['Content-Type' => 'application/json']
-        );
+
+        return response()->json($errorResponse, $statusCode);
     }
 
     /**

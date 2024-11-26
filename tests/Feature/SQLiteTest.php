@@ -14,10 +14,8 @@ class SQLiteTest extends TestCase
      #[Test]
     public function it_uses_sqlite_for_testing()
     {
-        // Create a test user
         $user = User::factory()->create(['name' => 'Test User']);
 
-        // Assert the user exists in the database
         $this->assertDatabaseHas('users', ['name' => 'Test User']);
     }
 }

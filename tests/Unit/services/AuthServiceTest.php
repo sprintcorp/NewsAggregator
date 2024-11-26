@@ -8,11 +8,9 @@ use App\Http\Services\AuthService;
 use App\Notifications\SendOtpNotification;
 use App\Http\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Date;
 use Mockery;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 
 class AuthServiceTest extends TestCase
