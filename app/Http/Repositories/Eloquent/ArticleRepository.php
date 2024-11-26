@@ -19,19 +19,20 @@ class ArticleRepository implements ArticleRepositoryInterface
         }
 
         if (!empty($filters['category'])) {
-            $query->where('category', $filters['category']);
+            $query->whereRaw('LOWER(category) = ?', [strtolower($filters['category'])]);
         }
 
         if (!empty($filters['source'])) {
-            $query->where('source', $filters['source']);
+            $query->whereRaw('LOWER(source) = ?', [strtolower($filters['source'])]);
         }
 
         if (!empty($filters['date'])) {
             $query->whereDate('published_date', $filters['date']);
         }
 
-        return $query->paginate($perPage);
+        return $query->paginate($perPage)->appends($filters);
     }
+
 
     public function findById(int $id): ?Article
     {
