@@ -92,5 +92,52 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
 1. Clone the repository:
    ```bash
    git clone https://github.com/sprintcorp/NewsAggregator.git
-   cd NewsAggregator
    
+
+2. Switch to the folder directory
+    ```bash
+    cd NewsAggregator
+
+3. Create .env file if it does not exist and copy the .env.example to .env file and make the required   configuration changes
+ 
+    ```bash
+    cp .env.example .env (Windows)
+
+4. Generate a new application key
+    ```bash
+    php artisan key:generate
+
+ 
+5. Update the .env file with the following Docker-specific values:
+    ```bash
+    MAIL_HOST=
+
+    NY_TIMES_KEY=""
+    GUARDIAN_KEY=""
+    NEWSORG_API_KEY=""
+
+    MAIL_USERNAME=
+    MAIL_PASSWORD=
+
+6. Build and Start Docker Containers: Run the following command to build the Docker containers and start the services:
+
+    ```bash
+    docker-compose up --build
+
+7. Access the Application:
+
+API Base URL: http://localhost:8000
+Swagger Documentation: http://localhost:8000/api/documentation
+
+
+8. Rebuild Containers:
+    ```bash
+    docker-compose up --build -d
+
+9. Stop and Remove Containers:
+    ```bash
+    docker-compose down
+
+Postman API Documentation
+```https://documenter.getpostman.com/view/7305732/2sAYBVhrye```
+
