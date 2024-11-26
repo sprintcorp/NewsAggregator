@@ -35,12 +35,12 @@ class ApiRequestServiceTest extends TestCase
         $response = new Response(200, [], json_encode(['data' => 'success']));
         $this->httpClient->shouldReceive('request')
             ->once()
-            ->with('GET', 'https://example.com/api', [])
+            ->with('GET', 'https://laraveldev.com/api', [])
             ->andReturn($response);
 
         Log::shouldReceive('info')->once()->with("Request successful for rate limit key: test_key.");
 
-        $result = $this->service->sendRequest('test_key', 'GET', 'https://example.com/api');
+        $result = $this->service->sendRequest('test_key', 'GET', 'https://laraveldev.com/api');
         $this->assertEquals(['data' => 'success'], $result);
     }
 
@@ -53,7 +53,7 @@ class ApiRequestServiceTest extends TestCase
 
         Log::shouldReceive('info')->once()->with("Rate limit reached for key: test_key. Throttling...");
 
-        $result = $this->service->sendRequest('test_key', 'GET', 'https://example.com/api');
+        $result = $this->service->sendRequest('test_key', 'GET', 'https://laraveldev.com/api');
         $this->assertEquals([], $result);
     }
 
@@ -66,12 +66,12 @@ class ApiRequestServiceTest extends TestCase
 
         $this->httpClient->shouldReceive('request')
             ->once()
-            ->with('GET', 'https://example.com/api', [])
-            ->andThrow(new RequestException("Error", new Request('GET', 'https://example.com/api')));
+            ->with('GET', 'https://laraveldev.com/api', [])
+            ->andThrow(new RequestException("Error", new Request('GET', 'https://laraveldev.com/api')));
 
         Log::shouldReceive('error')->once()->with("API request failed: Error");
 
-        $result = $this->service->sendRequest('test_key', 'GET', 'https://example.com/api');
+        $result = $this->service->sendRequest('test_key', 'GET', 'https://laraveldev.com/api');
         $this->assertEquals([], $result);
     }
 
