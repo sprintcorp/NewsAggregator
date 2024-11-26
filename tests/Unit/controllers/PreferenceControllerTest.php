@@ -1,13 +1,14 @@
 <?php
 
-namespace Tests\Unit\Http\Controllers\Api\V1;
+namespace Tests\Unit\Controllers;
 
 use App\Http\Controllers\Api\V1\PreferenceController;
 use App\Http\Requests\Article\StorePreferenceRequest;
 use App\Http\Services\PreferenceService;
-use App\Http\Responses\ApiResponse;
 use App\Http\Transformers\ArticleTransformer;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Mockery;
 use Tests\TestCase;
 
@@ -34,12 +35,19 @@ class PreferenceControllerTest extends TestCase
 
     public function test_index_success()
     {
-        $user = (object) ['id' => 1];
+        $user = new \App\Models\User(['id' => 1]);
+
         $request = Request::create('/api/v1/preferences', 'GET', ['per_page' => 5]);
         $request->setUserResolver(fn() => $user);
 
-        $articles = ['data' => ['title' => 'Sample Article']];
-        $paginatedData = ['data' => $articles];
+        $articles = new LengthAwarePaginator(
+            items: collect([['title' => 'Sample Article']]),
+            total: 1,
+            perPage: 5,
+            currentPage: 1
+        );
+
+        $paginatedData = ['data' => $articles->items()];
 
         $this->preferenceService
             ->shouldReceive('getArticlesByPreferences')
@@ -59,9 +67,10 @@ class PreferenceControllerTest extends TestCase
         $this->assertEquals('Articles retrieved successfully.', $response->getData()->message);
     }
 
+
     public function test_store_success()
     {
-        $user = (object) ['id' => 1];
+        $user = new User(['id' => 1]);
         $data = ['category' => ['Technology'], 'author' => ['John Doe'], 'source' => ['Tech Times']];
 
         $request = Mockery::mock(StorePreferenceRequest::class);
@@ -82,7 +91,7 @@ class PreferenceControllerTest extends TestCase
 
     public function test_show_no_preferences()
     {
-        $user = (object) ['id' => 1];
+        $user = new User(['id' => 1]);
         $request = Request::create('/api/v1/prefered/article', 'GET');
         $request->setUserResolver(fn() => $user);
 
@@ -95,7 +104,7 @@ class PreferenceControllerTest extends TestCase
         $response = $this->controller->show($request);
 
         $this->assertEquals(404, $response->status());
-        $this->assertEquals('No preferences found.', $response->getData()->message);
+        $this->assertEquals('No preferences found.', $response->getData()->errors);
     }
 
     protected function tearDown(): void
