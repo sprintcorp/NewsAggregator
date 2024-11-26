@@ -7,6 +7,7 @@ use Tests\TestCase;
 use App\Models\Article;
 use App\Models\Preference;
 use App\Http\Repositories\Eloquent\ArticleRepository;
+use PHPUnit\Framework\Attributes\Test;
 
 class ArticleRepositoryTest extends TestCase
 {
@@ -20,7 +21,7 @@ class ArticleRepositoryTest extends TestCase
         $this->repository = new ArticleRepository();
     }
 
-    /** @test */
+     #[Test]
     public function it_fetches_all_articles_with_filters()
     {
         Article::factory()->create(['category' => 'Technology', 'author' => 'Alice']);
@@ -30,7 +31,6 @@ class ArticleRepositoryTest extends TestCase
 
         $result = $this->repository->getAll($filters, 10);
 
-        // Cast to a collection for clarity
         $firstItem = collect($result->items())->first();
 
         $this->assertCount(1, $result->items());
@@ -39,7 +39,7 @@ class ArticleRepositoryTest extends TestCase
 
 
 
-    /** @test */
+     #[Test]
     public function it_finds_an_article_by_id()
     {
         $article = Article::factory()->create(['title' => 'Test Article']);
@@ -49,19 +49,38 @@ class ArticleRepositoryTest extends TestCase
         $this->assertEquals('Test Article', $result->title);
     }
 
-    /** @test */
+     #[Test]
     public function it_fetches_articles_based_on_preferences()
     {
         $preferences = Preference::factory()->create([
             'category' => ['Technology', 'Health'],
+            'author' => ['John Doe', 'Jane Smith'],
+            'source' => ['Tech Times', 'Health Daily'],
         ]);
 
-        Article::factory()->create(['category' => 'Technology']);
-        Article::factory()->create(['category' => 'Sports']);
+        Article::factory()->create([
+            'category' => 'Technology',
+            'author' => 'John Doe',
+            'source' => 'Tech Times',
+        ]);
+
+        Article::factory()->create([
+            'category' => 'Sports',
+            'author' => 'Jane Doe',
+            'source' => 'Sports News',
+        ]);
+
+        Article::factory()->create([
+            'category' => 'Health',
+            'author' => 'Jane Smith',
+            'source' => 'Health Daily',
+        ]);
 
         $result = $this->repository->getArticlesByPreferences($preferences, 10);
-        dd($result);
-        $this->assertCount(1, $result->items());
+
+        $this->assertCount(2, $result->items());
         $this->assertEquals('Technology', $result->items()[0]['category']);
+        $this->assertEquals('Health', $result->items()[1]['category']);
     }
+
 }

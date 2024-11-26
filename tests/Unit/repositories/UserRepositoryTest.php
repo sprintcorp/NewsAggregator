@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use App\Http\Repositories\Eloquent\UserRepository;
+use PHPUnit\Framework\Attributes\Test;
 
 class UserRepositoryTest extends TestCase
 {
@@ -19,7 +20,7 @@ class UserRepositoryTest extends TestCase
         $this->repository = new UserRepository();
     }
 
-    /** @test */
+     #[Test]
     public function it_creates_a_user()
     {
         $data = ['name' => 'John Doe', 'email' => 'john@example.com', 'password' => bcrypt('password')];
@@ -29,7 +30,7 @@ class UserRepositoryTest extends TestCase
         $this->assertEquals('john@example.com', $user->email);
     }
 
-    /** @test */
+     #[Test]
     public function it_finds_a_user_by_email()
     {
         $user = User::factory()->create(['email' => 'jane@example.com']);

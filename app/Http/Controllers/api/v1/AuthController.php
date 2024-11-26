@@ -121,7 +121,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/resetPassword",
+     *     path="/api/v1/password/reset",
      *     operationId="resetPassword",
      *     tags={"Auth"},
      *     summary="Reset password",
@@ -150,7 +150,7 @@ class AuthController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/savePassword",
+     *     path="/api/v1/password/update",
      *     operationId="savePassword",
      *     tags={"Auth"},
      *     summary="Update password",

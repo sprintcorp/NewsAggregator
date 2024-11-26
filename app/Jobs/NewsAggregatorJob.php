@@ -25,13 +25,10 @@ class NewsAggregatorJob implements ShouldQueue
 
     public function handle(): void
     {
-        // Resolve the service class dynamically (must be a concrete class)
         $service = app($this->sourceServiceClass);
 
-        // Fetch articles using the resolved service
         $articles = $service->fetchArticles();
 
-        // Dispatch a job to store the fetched articles
         dispatch(new StoreArticlesJob($articles));
     }
 }

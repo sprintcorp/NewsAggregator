@@ -41,5 +41,8 @@ return [
     'nyt' => [
         'api_key' => env('NY_TIMES_KEY'),
     ],
+    'newsapi' => [
+        'api_key' => env('NEWSORG_API_KEY'),
+    ],
 
 ];

@@ -5,12 +5,13 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use PHPUnit\Framework\Attributes\Test;
 
 class SQLiteTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+     #[Test]
     public function it_uses_sqlite_for_testing()
     {
         // Create a test user

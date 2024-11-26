@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\Services\Sources;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
 use Illuminate\Support\Facades\Log;
@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
-class TheGuardianSourceService implements NewsSourceInterface
+class TheGuardianApiService implements NewsSourceInterface
 {
     private string $url = 'https://content.guardianapis.com/search';
     private string $apiKey;

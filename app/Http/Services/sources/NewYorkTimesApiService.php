@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\Services\Sources;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
 use Illuminate\Support\Facades\Log;
@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
-class NewYorkTimesSourceService implements NewsSourceInterface
+class NewYorkTimesApiService implements NewsSourceInterface
 {
     private string $url = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
     private string $apiKey;
