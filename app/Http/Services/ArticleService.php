@@ -17,9 +17,11 @@ class ArticleService
 
     public function getFilteredArticles(array $filters, int $perPage = 10)
     {
-        $cacheKey = $this->generateCacheKey($filters, $perPage);
+        $page = request('page', 1);
+        $cacheKey = $this->generateCacheKey($filters, $perPage, $page);
 
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($filters, $perPage) {
+        return Cache::tags(['articles'])->remember(
+            $cacheKey, now()->addMinutes(10), function () use ($filters, $perPage) {
             return $this->articleRepository->getAll($filters, $perPage);
         });
     }
@@ -35,8 +37,10 @@ class ArticleService
         return $article;
     }
 
-    private function generateCacheKey(array $filters, int $perPage): string
+    private function generateCacheKey(array $filters, int $perPage, int $page): string
     {
-        return 'articles_' . md5(json_encode($filters) . "_perPage_" . $perPage);
+        $filtersKey = md5(json_encode($filters));
+
+        return "articles:filters:$filtersKey:per_page:$perPage:page:$page";
     }
 }

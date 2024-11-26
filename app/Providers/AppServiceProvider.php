@@ -10,9 +10,10 @@ use App\Http\Repositories\Eloquent\UserRepository;
 use App\Http\Repositories\Contracts\PreferenceRepositoryInterface;
 use App\Http\Repositories\Eloquent\PreferenceRepository;
 use App\Http\Services\ApiRequestService;
+use App\Models\Article;
+use App\Observers\ArticleObserver;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AppServiceProvider extends ServiceProvider
@@ -36,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Article::observe(ArticleObserver::class);
         RateLimiter::for('api-requests', function () {
             return Limit::perMinute(10)->response(function () {
                 Log::warning('Rate limit exceeded for API requests.');

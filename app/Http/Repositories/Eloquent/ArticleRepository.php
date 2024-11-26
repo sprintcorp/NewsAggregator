@@ -6,6 +6,7 @@ use App\Http\Repositories\Contracts\ArticleRepositoryInterface;
 use App\Models\Article;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use App\Models\Preference;
+use Illuminate\Support\Facades\Log;
 
 class ArticleRepository implements ArticleRepositoryInterface
 {
