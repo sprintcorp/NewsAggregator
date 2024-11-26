@@ -14,11 +14,13 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     nodejs \
-    npm
+    npm \
+    sqlite3 \
+    libsqlite3-dev
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Install Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
@@ -32,8 +34,8 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . .
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install Laravel dependencies (with PHPUnit for testing)
+# RUN composer install --optimize-autoloader
 
 # Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html \
@@ -43,5 +45,5 @@ RUN chown -R www-data:www-data /var/www/html \
 # Expose application port
 EXPOSE 8000
 
-# Start the Laravel application
+# Set default command
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000

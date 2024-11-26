@@ -17,30 +17,11 @@ services:
     depends_on:
       - mysql
       - redis
-    command: sh -c "./wait-for-it.sh mysql:3306 -- php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=laravel
-      - DB_USERNAME=laravel
-      - DB_PASSWORD=secret
-      - SESSION_DRIVER=redis
-      - CACHE_DRIVER=redis
-      - CACHE_STORE=redis
-      - QUEUE_CONNECTION=redis
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - MAIL_MAILER=smtp
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=465
-      - MAIL_USERNAME=sprintcorp7@gmail.com
-      - MAIL_PASSWORD=lrwwukrhhdtypjol
-      - MAIL_ENCRYPTION=ssl
-      - MAIL_FROM_ADDRESS=hello@example.com
-      - MAIL_FROM_NAME="${APP_NAME}"
+    command: >
+      sh -c "./wait-for-it.sh mysql:3306 -- php artisan migrate --force &&
+      php artisan serve --host=0.0.0.0 --port=8000"
+    env_file:
+      - .env
 
   queue:
     build:
@@ -55,30 +36,10 @@ services:
     volumes:
       - .:/var/www/html
       - ./storage:/var/www/html/storage
-    command: sh -c "./wait-for-it.sh mysql:3306 -- php artisan queue:work --sleep=3 --tries=3"
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=laravel
-      - DB_USERNAME=laravel
-      - DB_PASSWORD=secret
-      - SESSION_DRIVER=redis
-      - CACHE_DRIVER=redis
-      - CACHE_STORE=redis
-      - QUEUE_CONNECTION=redis
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - MAIL_MAILER=smtp
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=465
-      - MAIL_USERNAME=sprintcorp7@gmail.com
-      - MAIL_PASSWORD=lrwwukrhhdtypjol
-      - MAIL_ENCRYPTION=ssl
-      - MAIL_FROM_ADDRESS=hello@example.com
-      - MAIL_FROM_NAME="${APP_NAME}"
+    command: >
+      sh -c "./wait-for-it.sh mysql:3306 -- php artisan queue:work --sleep=3 --tries=3"
+    env_file:
+      - .env
 
   scheduler:
     build:
@@ -91,24 +52,10 @@ services:
       - mysql
     volumes:
       - .:/var/www/html
-    command: sh -c "while :; do php artisan schedule:run; sleep 60; done"
-    environment:
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - DB_CONNECTION=mysql
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_DATABASE=laravel
-      - DB_USERNAME=laravel
-      - DB_PASSWORD=secret
-      - MAIL_MAILER=smtp
-      - MAIL_HOST=smtp.gmail.com
-      - MAIL_PORT=465
-      - MAIL_USERNAME=sprintcorp7@gmail.com
-      - MAIL_PASSWORD=lrwwukrhhdtypjol
-      - MAIL_ENCRYPTION=ssl
-      - MAIL_FROM_ADDRESS=hello@example.com
-      - MAIL_FROM_NAME="${APP_NAME}"
+    command: >
+      sh -c "while :; do php artisan schedule:run; sleep 60; done"
+    env_file:
+      - .env
 
   mysql:
     image: mysql:8.0

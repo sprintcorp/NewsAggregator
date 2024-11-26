@@ -3,20 +3,19 @@
 namespace App\Http\Services\Sources;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
-use Illuminate\Support\Facades\Log;
+use App\Http\Services\ApiRequestService;
 use Illuminate\Support\Carbon;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Log;
 
 class NewsOrgApiService implements NewsSourceInterface
 {
     private string $url = 'https://newsapi.org/v2/everything';
     private string $apiKey;
-    private Client $httpClient;
+    private ApiRequestService $apiRequestService;
 
-    public function __construct(Client $client)
+    public function __construct(ApiRequestService $apiRequestService)
     {
-        $this->httpClient = $client;
+        $this->apiRequestService = $apiRequestService;
         $this->apiKey = config('services.newsapi.api_key');
     }
 
@@ -26,8 +25,11 @@ class NewsOrgApiService implements NewsSourceInterface
         $pages = 5;
 
         for ($page = 1; $page <= $pages; $page++) {
-            try {
-                $response = $this->httpClient->get($this->url, [
+            $response = $this->apiRequestService->sendRequest(
+                'newsorg-api',
+                'GET',
+                $this->url,
+                [
                     'query' => [
                         'apiKey' => $this->apiKey,
                         'q' => 'latest',
@@ -35,12 +37,11 @@ class NewsOrgApiService implements NewsSourceInterface
                         'pageSize' => 20,
                         'page' => $page,
                     ],
-                ]);
+                ]
+            );
 
-                $data = json_decode($response->getBody()->getContents(), true);
-                $articles = array_merge($articles, $this->transformArticles($data));
-            } catch (RequestException $e) {
-                Log::error("NewsAPI Request failed: {$e->getMessage()}");
+            if (!empty($response)) {
+                $articles = array_merge($articles, $this->transformArticles($response));
             }
         }
 
@@ -55,7 +56,7 @@ class NewsOrgApiService implements NewsSourceInterface
                 return [
                     'news_id' => md5($item['url']),
                     'title' => strip_tags($item['title']),
-                    'source' => 'NewsAPI',
+                    'source' => $item['source']['name'] ?? 'NewsAPI',
                     'author' => strip_tags($item['author'] ?? ''),
                     'category' => 'Latest',
                     'body' => strip_tags($item['description'] ?? ''),

@@ -107,7 +107,7 @@ class AuthController extends Controller
         $token = $this->authService->login($request->email, $request->password);
 
         if (!$token) {
-            return ApiResponse::error('Invalid credentials.', 401);
+            return ApiResponse::error('Invalid credentials.',[], 401);
         }
 
         return ApiResponse::success(['token' => $token], 'Login successful.');
@@ -180,6 +180,6 @@ class AuthController extends Controller
         if (isset($response['status']) && $response['status']) {
             return ApiResponse::success([], $response['message']);
         }
-        return ApiResponse::error($response['message'], 422);
+        return ApiResponse::error($response['message'],[], 422);
     }
 }

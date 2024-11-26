@@ -29,7 +29,6 @@ class ArticleRepository implements ArticleRepositoryInterface
             $query->whereDate('published_date', $filters['date']);
         }
 
-        // Return paginated results
         return $query->paginate($perPage);
     }
 

@@ -3,20 +3,19 @@
 namespace App\Http\Services\Sources;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
+use App\Http\Services\ApiRequestService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 
 class NewYorkTimesApiService implements NewsSourceInterface
 {
     private string $url = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
     private string $apiKey;
-    private Client $httpClient;
+    private ApiRequestService $apiRequestService;
 
-    public function __construct(Client $client)
+    public function __construct(ApiRequestService $apiRequestService)
     {
-        $this->httpClient = $client;
+        $this->apiRequestService = $apiRequestService;
         $this->apiKey = config('services.nyt.api_key');
     }
 
@@ -26,18 +25,20 @@ class NewYorkTimesApiService implements NewsSourceInterface
         $pages = 5;
 
         for ($page = 0; $page < $pages; $page++) {
-            try {
-                $response = $this->httpClient->get($this->url, [
+            $response = $this->apiRequestService->sendRequest(
+                'nyt-api',
+                'GET',
+                $this->url,
+                [
                     'query' => [
                         'api-key' => $this->apiKey,
                         'page' => $page,
                     ],
-                ]);
+                ]
+            );
 
-                $data = json_decode($response->getBody()->getContents(), true);
-                $articles = array_merge($articles, $this->transformArticles($data));
-            } catch (RequestException $e) {
-                Log::error("NYT API Request failed: {$e->getMessage()}");
+            if (!empty($response)) {
+                $articles = array_merge($articles, $this->transformArticles($response));
             }
         }
 

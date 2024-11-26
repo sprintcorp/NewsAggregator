@@ -1,14 +1,14 @@
 <?php
 
-// use App\Console\Commands\DispatchNewsAggregatorJob;
 use App\Http\Exceptions\CustomExceptionHandler;
 use App\Http\Middleware\IsTokenValid;
+use App\Http\Middleware\SanitizeInputMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-// use Illuminate\Console\Scheduling\Schedule;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api/v1'
     )
     ->withMiddleware(function (Middleware $middleware) {
-
+        $middleware->append(SanitizeInputMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->respond(function (Response $response, $e, Request $request) {

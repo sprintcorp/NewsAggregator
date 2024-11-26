@@ -3,20 +3,18 @@
 namespace App\Http\Services\Sources;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
-use Illuminate\Support\Facades\Log;
+use App\Http\Services\ApiRequestService;
 use Illuminate\Support\Carbon;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 
 class TheGuardianApiService implements NewsSourceInterface
 {
     private string $url = 'https://content.guardianapis.com/search';
     private string $apiKey;
-    private Client $httpClient;
+    private ApiRequestService $apiRequestService;
 
-    public function __construct(Client $client)
+    public function __construct(ApiRequestService $apiRequestService)
     {
-        $this->httpClient = $client;
+        $this->apiRequestService = $apiRequestService;
         $this->apiKey = config('services.guardian.api_key');
     }
 
@@ -26,19 +24,21 @@ class TheGuardianApiService implements NewsSourceInterface
         $pages = 5;
 
         for ($page = 1; $page <= $pages; $page++) {
-            try {
-                $response = $this->httpClient->get($this->url, [
+            $response = $this->apiRequestService->sendRequest(
+                'guardian-api', // Unique key for rate limiting
+                'GET',
+                $this->url,
+                [
                     'query' => [
                         'api-key' => $this->apiKey,
                         'page' => $page,
                         'show-fields' => 'byline,body',
                     ],
-                ]);
+                ]
+            );
 
-                $data = json_decode($response->getBody()->getContents(), true);
-                $articles = array_merge($articles, $this->transformArticles($data));
-            } catch (RequestException $e) {
-                Log::error("Guardian API Request failed: {$e->getMessage()}");
+            if (!empty($response)) {
+                $articles = array_merge($articles, $this->transformArticles($response));
             }
         }
 
