@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services\Contracts;
+namespace App\Http\Services\contracts;
 
 interface NewsSourceInterface
 {

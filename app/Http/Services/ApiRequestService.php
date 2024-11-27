@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\services;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;

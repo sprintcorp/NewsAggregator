@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services\Sources;
+namespace App\Http\Services\sources;
 
 use App\Http\Services\Contracts\NewsSourceInterface;
 use App\Http\Services\ApiRequestService;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\services;
 
 use App\Http\Repositories\Contracts\ArticleRepositoryInterface;
 use App\Models\Article;
