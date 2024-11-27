@@ -92,6 +92,8 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
 1. Clone the repository:
    ```bash
    git clone https://github.com/sprintcorp/NewsAggregator.git
+
+   git checkout master
    
 
 2. Switch to the folder directory
