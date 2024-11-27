@@ -18,7 +18,6 @@ class ArticleControllerFeatureTest extends TestCase
     {
         parent::setUp();
 
-        // Create a user and generate a token
         $user = User::factory()->create();
         $this->token = $user->createToken('API Token')->plainTextToken;
     }

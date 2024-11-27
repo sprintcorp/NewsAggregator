@@ -20,7 +20,6 @@ class PreferenceControllerFeatureTest extends TestCase
     {
         parent::setUp();
 
-        // Create a test user and generate an API token for authentication
         $user = User::factory()->create([
             'email' => 'user@example.com',
             'password' => Hash::make('password123'),
@@ -31,7 +30,6 @@ class PreferenceControllerFeatureTest extends TestCase
     #[Test]
     public function it_fetches_a_paginated_personalized_feed()
     {
-        // Seed articles and preferences
         $user = User::first();
         $user->preferences()->create([
             'category' => ['Technology'],
