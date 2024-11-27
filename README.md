@@ -48,6 +48,8 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
 
 ### API Documentation
 - **Tool:** Swagger/OpenAPI.
+- **Postman Api Documentation:** 
+  `https://documenter.getpostman.com/view/7305732/2sAYBVhrye`
 - **Endpoint:** Accessible via `http://localhost:8000/api/documentation`.
 - **Includes:**
   - Detailed descriptions of all endpoints.
@@ -155,6 +157,5 @@ Swagger Documentation: http://localhost:8000/api/documentation
     ```bash
     docker exec -it <container_id> php artisan test
 
-Postman API Documentation
-```https://documenter.getpostman.com/view/7305732/2sAYBVhrye```
+
 
