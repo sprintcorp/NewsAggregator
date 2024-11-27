@@ -18,6 +18,7 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
         $this->articleTransformer = $articleTransformer;
     }
+
     /**
      * @OA\Get(
      *     path="/api/v1/articles",
