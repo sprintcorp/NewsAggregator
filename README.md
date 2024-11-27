@@ -100,6 +100,9 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
     ```bash
     cd NewsAggregator
 
+Use make file command `make up` to run all need command or skip to run individually
+
+
 3. Create .env file if it does not exist and copy the .env.example to .env file and make the required   configuration changes
  
     ```bash
