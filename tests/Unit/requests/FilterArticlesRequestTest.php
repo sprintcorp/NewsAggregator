@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Requests;
+namespace Tests\Unit\requests;
 
 use App\Http\Requests\Article\FilterArticlesRequest;
 use Illuminate\Support\Facades\Validator;

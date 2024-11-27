@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Repositories\Contracts\ArticleRepositoryInterface;
+use App\Models\Article;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 

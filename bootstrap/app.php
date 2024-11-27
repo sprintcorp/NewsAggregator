@@ -6,8 +6,8 @@ use App\Http\Middleware\SanitizeInputMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(SanitizeInputMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->respond(function (Response $response, $e, Request $request) {
+        $exceptions->respond(function (JsonResponse $response, $e, Request $request) {
             return CustomExceptionHandler::handle($request, $e);
         });
     })

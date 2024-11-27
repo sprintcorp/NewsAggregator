@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Notifications;
+namespace Tests\Unit\services;
 
 use Tests\TestCase;
 use App\Notifications\SendOtpNotification;

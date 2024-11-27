@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Services;
+namespace Tests\Feature\services;
 
 use App\Http\Services\AuthService;
 use App\Models\User;

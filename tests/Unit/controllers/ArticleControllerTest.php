@@ -1,11 +1,13 @@
 <?php
 
-namespace Tests\Unit\Controllers;
+namespace Tests\Unit\controllers;
 
 use App\Http\Controllers\api\v1\ArticleController;
 use App\Http\Requests\Article\FilterArticlesRequest;
 use App\Http\Services\ArticleService;
 use App\Http\Transformers\ArticleTransformer;
+use App\Models\Article;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Mockery;

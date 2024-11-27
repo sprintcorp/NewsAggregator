@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Controllers;
+namespace Tests\Unit\controllers;
 
 use App\Http\Controllers\api\v1\AuthController;
 use App\Http\Requests\Auth\LoginRequest;

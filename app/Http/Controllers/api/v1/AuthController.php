@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Http\Responses\ApiResponse;
 use App\Http\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -174,7 +175,7 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function savePassword(UpdatePasswordRequest $request)
+    public function savePassword(UpdatePasswordRequest $request): JsonResponse
     {
         $response = $this->authService->updatePassword($request->validated());
         if (isset($response['status']) && $response['status']) {

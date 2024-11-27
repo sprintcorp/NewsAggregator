@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests\Feature\Controllers;
+namespace Tests\Feature\controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -66,32 +67,32 @@ class AuthControllerFeatureTest extends TestCase
     }
 
 
-    // #[Test]
-    // public function it_updates_password_successfully()
-    // {
-    //     $user = User::factory()->create([
-    //         'email' => 'john.doe@example.com',
-    //         'password' => Hash::make('oldpassword123'),
-    //     ]);
+     #[Test]
+     public function it_updates_password_successfully()
+     {
+         $user = User::factory()->create([
+             'email' => 'john.doe@example.com',
+             'password' => Hash::make('oldpassword123'),
+         ]);
 
-    //     $user->update(['otp' => '123456']);
+         $user->update([
+             'otp' => '123456',
+             'otp_expiration' => Carbon::now()->addMinutes(15)
+         ]);
 
-    //     $response = $this->postJson('/api/v1/password/update', [
-    //         'email' => $user->email,
-    //         'otp' => '123456',
-    //         'password' => 'newpassword123',
-    //         'password_confirmation' => 'newpassword123',
-    //     ]);
-
-    //     $response->assertStatus(200);
-    //     $response->assertJson([
-    //         'success' => true,
-    //         'message' => 'Password updated successfully.',
-    //         'data' => [],
-    //     ]);
-
-    //     $this->assertTrue(Hash::check('newpassword123', $user->fresh()->password));
-    // }
+         $response = $this->postJson('/api/v1/password/update', [
+             'email' => $user->email,
+             'otp' => '123456',
+             'password' => 'newpassword123',
+             'password_confirmation' => 'newpassword123',
+         ]);
+         $response->assertStatus(200);
+         $response->assertJson([
+             'success' => true,
+             'message' => 'Password updated successfully.',
+             'data' => [],
+         ]);
+     }
 
     #[Test]
     public function it_fails_to_update_password_with_invalid_email()

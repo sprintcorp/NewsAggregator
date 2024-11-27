@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Controllers;
+namespace Tests\Unit\controllers;
 
 use App\Http\Controllers\Api\V1\PreferenceController;
 use App\Http\Requests\Article\StorePreferenceRequest;

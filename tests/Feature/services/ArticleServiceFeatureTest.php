@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Services;
+namespace Tests\Feature\services;
 
 use Tests\TestCase;
 use App\Models\Article;
