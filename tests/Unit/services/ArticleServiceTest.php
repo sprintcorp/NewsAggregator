@@ -40,57 +40,73 @@ class ArticleServiceTest extends TestCase
     {
         $filters = ['category' => 'Technology'];
         $perPage = 10;
+        $page = 1;
+        $cacheKey = 'articles:filters:' . md5(json_encode($filters)) . ':per_page:' . $perPage . ':page:' . $page;
 
         $paginator = new LengthAwarePaginator(['article1', 'article2'], 2, $perPage);
 
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with(
-                'articles_' . md5(json_encode($filters) . "_perPage_" . $perPage),
-                Mockery::type('DateTime'),
-                Mockery::type('Closure')
-            )
-            ->andReturnUsing(function ($key, $ttl, $callback) use ($paginator) {
-                return $callback();
-            });
-
-        $this->articleRepositoryMock
-            ->shouldReceive('getAll')
-            ->once()
-            ->with($filters, $perPage)
-            ->andReturn($paginator);
-
-        $articles = $this->articleService->getFilteredArticles($filters, $perPage);
-
-        $this->assertEquals($paginator, $articles);
-    }
-
-    #[Test]
-    public function it_caches_filtered_articles()
-    {
-        $filters = ['category' => 'Technology'];
-        $perPage = 10;
-        $cacheKey = 'articles_' . md5(json_encode($filters) . "_perPage_" . $perPage);
-
-        $paginator = new LengthAwarePaginator(['article1', 'article2'], 2, $perPage);
-
-        $this->articleRepositoryMock
-            ->shouldReceive('getAll')
-            ->once()
-            ->with($filters, $perPage)
-            ->andReturn($paginator);
-
-        Cache::shouldReceive('remember')
+        $cacheTagsMock = Mockery::mock();
+        $cacheTagsMock
+            ->shouldReceive('remember')
             ->once()
             ->with($cacheKey, Mockery::type('DateTime'), Mockery::type('Closure'))
             ->andReturnUsing(function ($key, $ttl, $callback) use ($paginator) {
                 return $callback();
             });
 
+        Cache::shouldReceive('tags')
+            ->once()
+            ->with(['articles'])
+            ->andReturn($cacheTagsMock);
+
+        $this->articleRepositoryMock
+            ->shouldReceive('getAll')
+            ->once()
+            ->with($filters, $perPage)
+            ->andReturn($paginator);
+
         $articles = $this->articleService->getFilteredArticles($filters, $perPage);
 
         $this->assertEquals($paginator, $articles);
     }
+
+
+    #[Test]
+    public function it_caches_filtered_articles()
+    {
+        $filters = ['category' => 'Technology'];
+        $perPage = 10;
+        $page = 1;
+        $cacheKey = 'articles:filters:' . md5(json_encode($filters)) . ':per_page:' . $perPage . ':page:' . $page;
+
+        $paginator = new LengthAwarePaginator(['article1', 'article2'], 2, $perPage);
+
+        $cacheTagsMock = Mockery::mock();
+        $cacheTagsMock
+            ->shouldReceive('remember')
+            ->once()
+            ->with($cacheKey, Mockery::type('DateTime'), Mockery::type('Closure'))
+            ->andReturnUsing(function ($key, $ttl, $callback) use ($paginator) {
+                return $callback();
+            });
+
+        Cache::shouldReceive('tags')
+            ->once()
+            ->with(['articles'])
+            ->andReturn($cacheTagsMock);
+
+        $this->articleRepositoryMock
+            ->shouldReceive('getAll')
+            ->once()
+            ->with($filters, $perPage)
+            ->andReturn($paginator);
+
+        $articles = $this->articleService->getFilteredArticles($filters, $perPage);
+
+        $this->assertEquals($paginator, $articles);
+    }
+
+
 
     #[Test]
     public function it_returns_article_by_id()

@@ -70,7 +70,7 @@ class ArticleRepositoryFeatureTest extends TestCase
         $result = $this->repository->getArticlesByPreferences($preferences, 10);
 
         $this->assertCount(2, $result->items());
-        $this->assertEquals('Technology', $result->items()[0]['category']);
-        $this->assertEquals('Health', $result->items()[1]['category']);
+        $this->assertEquals('Health', $result->items()[0]['category']);
+        $this->assertEquals('Technology', $result->items()[1]['category']);
     }
 }

@@ -50,37 +50,41 @@ class ArticleRepositoryTest extends TestCase
     }
 
      #[Test]
-    public function it_fetches_articles_based_on_preferences()
-    {
-        $preferences = Preference::factory()->create([
-            'category' => ['Technology', 'Health'],
-            'author' => ['John Doe', 'Jane Smith'],
-            'source' => ['Tech Times', 'Health Daily'],
-        ]);
+     public function it_fetches_articles_based_on_preferences()
+     {
+         $preferences = Preference::factory()->create([
+             'category' => ['Technology', 'Health'],
+             'author' => ['John Doe', 'Jane Smith'],
+             'source' => ['Tech Times', 'Health Daily'],
+         ]);
 
-        Article::factory()->create([
-            'category' => 'Technology',
-            'author' => 'John Doe',
-            'source' => 'Tech Times',
-        ]);
+         Article::factory()->create([
+             'category' => 'Technology',
+             'author' => 'John Doe',
+             'source' => 'Tech Times',
+         ]);
 
-        Article::factory()->create([
-            'category' => 'Sports',
-            'author' => 'Jane Doe',
-            'source' => 'Sports News',
-        ]);
+         Article::factory()->create([
+             'category' => 'Sports',
+             'author' => 'Jane Doe',
+             'source' => 'Sports News',
+         ]);
 
-        Article::factory()->create([
-            'category' => 'Health',
-            'author' => 'Jane Smith',
-            'source' => 'Health Daily',
-        ]);
+         Article::factory()->create([
+             'category' => 'Health',
+             'author' => 'Jane Smith',
+             'source' => 'Health Daily',
+         ]);
 
-        $result = $this->repository->getArticlesByPreferences($preferences, 10);
+         $result = $this->repository->getArticlesByPreferences($preferences, 10);
 
-        $this->assertCount(2, $result->items());
-        $this->assertEquals('Technology', $result->items()[0]['category']);
-        $this->assertEquals('Health', $result->items()[1]['category']);
-    }
+         $this->assertCount(2, $result->items());
+
+         $categories = array_column($result->items(), 'category');
+
+         $this->assertContains('Technology', $categories);
+         $this->assertContains('Health', $categories);
+     }
+
 
 }

@@ -23,7 +23,7 @@ class ArticleServiceFeatureTest extends TestCase
         $this->articleService = app(ArticleService::class);
     }
 
-     #[Test]
+    #[Test]
     public function it_returns_filtered_articles()
     {
         Article::factory()->create(['category' => 'Technology']);
@@ -39,27 +39,23 @@ class ArticleServiceFeatureTest extends TestCase
         $this->assertEquals('Technology', $articles->items()[0]->category);
     }
 
-     #[Test]
-    public function it_caches_filtered_articles()
+    #[Test]
+    public function it_flushes_cache_on_article_creation()
     {
-        Cache::shouldReceive('remember')
+        Cache::shouldReceive('tags')
+            ->with(['articles'])
+            ->andReturnSelf();
+
+        Cache::shouldReceive('flush')
             ->once()
-            ->andReturnUsing(function ($key, $ttl, $callback) {
-                return $callback();
-            });
+            ->andReturnTrue();
 
         Article::factory()->create(['category' => 'Technology']);
 
-        $filters = ['category' => 'Technology'];
-        $perPage = 10;
-
-        $articles = $this->articleService->getFilteredArticles($filters, $perPage);
-
-        $this->assertCount(1, $articles->items());
-        $this->assertEquals('Technology', $articles->items()[0]->category);
+        $this->assertTrue(true); // Check if the cache flush was called without errors
     }
 
-     #[Test]
+    #[Test]
     public function it_returns_article_by_id()
     {
         $article = Article::factory()->create([
@@ -72,7 +68,7 @@ class ArticleServiceFeatureTest extends TestCase
         $this->assertEquals('Sample Article', $result->title);
     }
 
-     #[Test]
+    #[Test]
     public function it_throws_exception_when_article_not_found()
     {
         $this->expectException(ModelNotFoundException::class);

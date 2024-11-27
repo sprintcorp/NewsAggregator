@@ -39,29 +39,19 @@ class ArticleRepository implements ArticleRepositoryInterface
         return Article::find($id);
     }
 
-    /**
-     * Fetch articles based on preferences.
-     *
-     * @param Preference $preferences
-     * @param int $perPage
-     * @return mixed
-     */
     public function getArticlesByPreferences(Preference $preferences, int $perPage)
     {
-        $query = Article::query();
-
-        if (!empty($preferences->category)) {
+        return Article::query()
+        ->when(!empty($preferences->category), function ($query) use ($preferences) {
             $query->whereIn('category', $preferences->category);
-        }
-
-        if (!empty($preferences->author)) {
+        })
+        ->when(!empty($preferences->author), function ($query) use ($preferences) {
             $query->whereIn('author', $preferences->author);
-        }
-
-        if (!empty($preferences->source)) {
+        })
+        ->when(!empty($preferences->source), function ($query) use ($preferences) {
             $query->whereIn('source', $preferences->source);
-        }
-
-        return $query->paginate($perPage);
+        })
+        ->orderBy('category')
+        ->paginate($perPage);
     }
 }
