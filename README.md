@@ -98,9 +98,10 @@ Welcome to the **News Aggregator API**. This backend API is built using Laravel 
    git checkout master
    
 
-2. Switch to the folder directory
+2. Switch to the folder directory and install dependencies
     ```bash
     cd NewsAggregator
+   composer install
 
 Use make file command `make up` to run all need command or skip to run individually
 
