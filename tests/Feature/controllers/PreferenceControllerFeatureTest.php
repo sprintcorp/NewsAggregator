@@ -6,7 +6,6 @@ use App\Models\User;
 use App\Models\Article;
 use App\Models\Preference;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -14,30 +13,27 @@ class PreferenceControllerFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $user;
     private string $token;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $user = User::factory()->create([
-            'email' => 'user@example.com',
-            'password' => Hash::make('password123'),
-        ]);
-        $this->token = $user->createToken('TestToken')->plainTextToken;
+        $this->user = User::factory()->create();
+        $this->token = $this->user->createToken('API Token')->plainTextToken;
     }
 
     #[Test]
     public function it_fetches_a_paginated_personalized_feed()
     {
-        $user = User::first();
-        $user->preferences()->create([
+        $this->user->preferences()->create([
             'category' => ['Technology'],
             'author' => ['John Doe'],
             'source' => ['Tech Times'],
         ]);
 
-        Article::factory()->create([
+        Article::factory()->count(50)->create([
             'category' => 'Technology',
             'author' => 'John Doe',
             'source' => 'Tech Times',
@@ -86,7 +82,7 @@ class PreferenceControllerFeatureTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('preferences', [
-            'user_id' => User::first()->id,
+            'user_id' => $this->user->id,
             'category' => json_encode(['Technology']),
         ]);
     }
@@ -94,8 +90,7 @@ class PreferenceControllerFeatureTest extends TestCase
     #[Test]
     public function it_retrieves_user_preferences()
     {
-        $user = User::first();
-        $user->preferences()->create([
+        $this->user->preferences()->create([
             'category' => ['Technology', 'Health'],
             'author' => ['John Doe'],
             'source' => ['Tech Times'],

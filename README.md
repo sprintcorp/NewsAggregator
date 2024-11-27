@@ -139,6 +139,18 @@ Swagger Documentation: http://localhost:8000/api/documentation
 9. Stop and Remove Containers:
     ```bash
     docker-compose down
+   
+10. Access application container
+    ```bash
+    docker ps
+    
+11. Select the container name and access it  
+    ```bash
+    docker exec -it <container_name> bash
+    
+12. To run test in container
+    ```bash
+    docker exec -it <container_id> php artisan test
 
 Postman API Documentation
 ```https://documenter.getpostman.com/view/7305732/2sAYBVhrye```
